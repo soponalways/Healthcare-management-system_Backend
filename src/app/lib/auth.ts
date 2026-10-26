@@ -43,8 +43,8 @@ export const auth = betterAuth({
     }, 
 
     // trustedOrigins: [""]
-    advanced:{
-        disableCSRFCheck: true
-    }
+    // advanced:{
+    //     disableCSRFCheck: true
+    // }
     
 },);
