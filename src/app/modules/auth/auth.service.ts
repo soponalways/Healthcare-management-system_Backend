@@ -28,10 +28,33 @@ const registerPatient = async (payload: IRegisterPatientPayload) => {
 
     // TODO: Add patient to the database after successful registration 
 
-    // const pataint = await prisma.$transaction(async (tx) => {})
-    
+    try {
+        const patient = await prisma.$transaction(async (tx) => {
+        const patientTx = await tx.patient.create({
+            data : {
+                userId: data.user.id, 
+                email: payload.email, 
+                name: payload.name
+            }
+        })
 
-    return data
+        return patientTx; 
+    }); 
+
+    
+    return {
+        ...data, 
+        patient
+    }
+    } catch (error) {
+        console.log("Transaction Error: ", error); 
+        await prisma.user.delete({
+            where : {
+                id: data.user.id
+            }
+        })
+        throw error;
+    }
 }; 
 
 
