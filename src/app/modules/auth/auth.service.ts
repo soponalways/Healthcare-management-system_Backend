@@ -28,14 +28,65 @@ const registerPatient = async (payload: IRegisterPatientPayload) => {
 
     // TODO: Add patient to the database after successful registration 
 
-    // const pataint = await prisma.$transaction(async (tx) => {})
-    
+    try {
+        const patient = await prisma.$transaction(async (tx) => {
+        const patientTx = await tx.patient.create({
+            data : {
+                userId: data.user.id, 
+                email: payload.email, 
+                name: payload.name
+            }
+        })
 
-    return data
+        return patientTx; 
+    }); 
+
+    
+    return {
+        ...data, 
+        patient
+    }
+    } catch (error) {
+        console.log("Transaction Error: ", error); 
+        await prisma.user.delete({
+            where : {
+                id: data.user.id
+            }
+        })
+        throw error;
+    }
 }; 
 
 
 
+interface ILoginUserPayload {
+    email: string; 
+    password: string; 
+}
+
+const loginUser = async(payload: ILoginUserPayload) => {
+    const {email, password} = payload; 
+
+    const data = await auth.api.signInEmail({
+        body: {
+            email, 
+            password
+        }
+    }); 
+
+    if(data.user.status === UserStatus.BLOCKED) {
+        throw new Error("User is blocked")
+    }; 
+
+    if(data.user.isDeleted || data.user.status === UserStatus.DELETED) {
+        throw new Error("User is deleted")
+    }; 
+
+    return data.user; 
+}
+
+
 export const authService = {
-    registerPatient
+    registerPatient, 
+    loginUser
 }
