@@ -41,7 +41,10 @@ export interface IDoctorCreatePayload {
     password : string, 
     doctor: {
         name: string, 
-        email: string, 
+        email: string,
+        profilePhoto?: string, 
+        contactNumber?: string;
+        address?: string;
         registrationNumber:  string, 
         experience: number, 
         gender: Gender, 
@@ -49,5 +52,6 @@ export interface IDoctorCreatePayload {
         qualification: string, 
         currentWorkingPlace : string, 
         designation : string, 
-    }
+    }, 
+    specialties : string[]
 }
